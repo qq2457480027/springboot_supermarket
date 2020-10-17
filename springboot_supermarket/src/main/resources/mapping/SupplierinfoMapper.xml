@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hc.springboot.mapper.SupplierinfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hc.springboot.pojo.Supplierinfo">
+        <id column="supId" property="supId" />
+        <result column="supName" property="supName" />
+        <result column="supIntro" property="supIntro" />
+        <result column="supContacts" property="supContacts" />
+        <result column="supPhone" property="supPhone" />
+        <result column="supSite" property="supSite" />
+        <result column="supFax" property="supFax" />
+    </resultMap>
+
+    <select id="searchSupplierinfoPage" resultMap="BaseResultMap">
+        SELECT supId,supName,supIntro,supContacts,supPhone,supSite,supFax FROM supplierinfo
+        WHERE 1=1
+        <if test="param.supName != null and param.supName != ''">
+            and supName RLIKE #{param.supName}
+        </if>
+        <if test="param.supIntro != null and param.supIntro != ''">
+            and supIntro RLIKE #{param.supIntro}
+        </if>
+        LIMIT #{paramMap.currentPageNo},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="integer">
+        SELECT COUNT(1) FROM supplierinfo WHERE 1=1
+        <if test="param.supName != null and param.supName != ''">
+            and supName RLIKE #{param.supName}
+        </if>
+        <if test="param.supIntro != null and param.supIntro != ''">
+            and supIntro RLIKE #{param.supIntro}
+        </if>
+    </select>
+</mapper>

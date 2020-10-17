@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <script type="text/javascript" th:src="@{/js/jquery-1.8.3.js}"></script>
+    <!--validate表单验证插件-->
+    <script type="text/javascript" th:src="@{/validate/jquery.validate.min.js}"></script>　
+    <script type="text/javascript" th:src="@{/validate/messages_zh.js}"></script>
+    <script type="text/javascript" th:src="@{/validate/additional-methods.js}"></script>
+	<link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        input.error { border: 1px solid red; }
+        label.error {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("#form1").validate({
+                rules:{
+                    billOffer:{
+                        required:true,
+                        number:true
+                    },
+                    comQuantity:{
+                        required:true,
+                        digits:true
+                    }
+                },
+                messages:{
+                    billOffer:{
+                        required:"交易金额不能为空",
+                        number:"交易金额必须为合法的数字(整数，小数)"
+                    },
+                    comQuantity:{
+                        required:"交易数量不能为空",
+                        digits:"交易数量必须是整数"
+                    }
+                },
+                errorElement: "label", //用来创建错误提示信息标签
+                success: function(label) { //验证成功后的执行的回调函数
+                    //label指向上面那个错误提示信息标签label
+                    label.text(" ") //清空错误提示消息
+                        .addClass("success"); //加上自定义的success类
+                }
+            });
+        });
+        function billSubmit(){
+            var flag = $("#form1").valid();
+            if(!flag){
+                //没有通过验证
+                return;
+            }
+            $.ajax({
+                url:"../billinfo",
+                type:"post",
+                data:$("form").serialize()+"&_method=put",
+                success:function (result) {
+                    if (result>0){
+                        alert("修改成功！");
+                        location.href='../billinfos';
+                    }else {
+                        alert("修改失败！");
+                    }
+                }
+            })
+        }
+        function billDel(id) {
+            if (confirm("确定删除吗？")){
+                $.ajax({
+                    url:"../billinfo",
+                    type:"post",
+                    data:"id="+id+"&_method=delete",
+                    success:function (result) {
+                        if (result>0){
+                            alert("删除成功！");
+                            location.href='../billinfos';
+                        }else {
+                            alert("删除失败！");
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="main">
+    <div class="optitle clearfix">
+        <div class="title">账单管理&gt;&gt;</div>
+    </div>
+    <form id="form1" name="form1" method="post" action="provider.do" onsubmit="return checkit();">
+        <div class="content">
+            <font color="red"></font>
+            <input name="flag" value="doAdd" type="hidden">
+            <table class="box">
+                <tbody>
+                <tr>
+                    <td class="field">账单编号：</td>
+                    <td><input readonly name="id" class="text" type="text" th:value="${bill.id}"> <font color="red">*</font></td>
+                </tr>
+                <tr>
+					<td class="field">交易金额：</td>
+					<td><input name="billOffer" class="text" type="text" th:value="${bill.billOffer}"> <font color="red">*</font></td>
+				</tr>
+				<tr>
+					<td class="field">交易数量：</td>
+					<td><input name="comQuantity" class="text" type="text" th:value="${bill.comQuantity}"> <font color="red">*</font></td>
+				</tr>
+				<tr>
+					<td class="field">商品名称：</td>
+					<td><input name="comName" class="text" type="text" th:value="${bill.comName}"></td>
+				</tr>
+                <tr>
+                    <td class="field">商品描述：</td>
+                    <td><textarea name="comDescribe" id="textarea" cols="45" rows="5" th:text="${bill.comDescribe}"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="field">是否付款：</td>
+                    <td>
+                        <select name="payment">
+                            <option value="1" th:selected="${bill.payment eq 1}">是</option>
+                            <option value="0" th:selected="${bill.payment eq 0}">否</option>
+                        </select>
+					</td>
+                </tr>
+				<tr>
+					<td class="field">所属供应商：</td>
+					<td>
+                        <select name="supId">
+                            <option th:selected="${supplier.supId eq bill.supId}" th:value="${supplier.supId}" th:each="supplier:${suppliers}" th:text="${supplier.supName}"></option>
+                        </select>
+					</td>
+				</tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="buttons">
+            <input name="button" onclick="window.history.back();" value="返回" class="input-button" type="button">
+            <input name="button" value="修改" class="input-button" type="button" onclick="billSubmit()">
+            <input name="button" value="删除" class="input-button" type="button" th:onclick="billDel([[${bill.id}]])">
+        </div>
+    </form>
+</div>
+</body>
+</html>

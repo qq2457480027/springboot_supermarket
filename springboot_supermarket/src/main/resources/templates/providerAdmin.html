@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Insert title here</title>
+    <script type="text/javascript" th:src="@{/js/jquery-1.8.3.js}"></script>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="menu">
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                <form method="get" th:action="@{/supplierinfo/supplierinfos}" id="suppForm">
+                    供应商名称：<input name="supName" class="input-text" type="text" th:value="${suppPage.param.supName}">
+                    供应商描述：<input name="supIntro" class="input-text" type="text" th:value="${suppPage.param.supIntro}">&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input value="组 合 查 询" type="submit">
+                    <!-- 当前页码 -->
+                    <input type="hidden" id="currentPageNo" value="1" name="currentPageNo"/>
+                    <!-- 每页显示数量 -->
+                    <input type="hidden" id="pageSize" value="5" name="pageSize"/>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="main">
+    <div class="optitle clearfix">
+        <em><input value="添加数据" class="input-button" onclick="addPage()" type="button"></em>
+        <div class="title">供应商管理&gt;&gt;</div>
+    </div>
+
+    <div class="content">
+        <table class="list">
+            <tbody>
+            <tr>
+                <td width="70" height="29">
+                    <div class="STYLE1" align="center">编号</div>
+                </td>
+                <td width="80">
+                    <div class="STYLE1" align="center">供应商名称</div>
+                </td>
+                <td width="100">
+                    <div class="STYLE1" align="center">供应商描述</div>
+                </td>
+                <td width="100">
+                    <div class="STYLE1" align="center">联系人</div>
+                </td>
+                <td width="100">
+                    <div class="STYLE1" align="center">电话</div>
+                </td>
+                <td width="100">
+                    <div class="STYLE1" align="center">地址</div>
+                </td>
+            </tr>
+            <tr th:each="supp:${suppPage.list}" th:if="${not #lists.isEmpty(suppPage.list) && #lists.size(suppPage.list)>0}">
+                <td>[[${supp.supId}]]</td>
+                <td><a th:href="@{/supplierinfo/supplierinfo/}+${supp.supId}">[[${supp.supName}]]</a></td>
+                <td>[[${supp.supIntro}]]</td>
+                <td>[[${supp.supContacts}]]</td>
+                <td>[[${supp.supPhone}]]</td>
+                <td>[[${supp.supSite}]]</td>
+            </tr>
+            <tr th:if="${#lists.size(suppPage.list)<1}">
+                <td style="text-align: center" colspan="100">未查询到任何数据！</td>
+            </tr>
+            <tr>
+                <th colspan="100" class="pager">
+                    <div class="pager">
+                        共[[${suppPage.totalCount}]]条记录
+                        每页<input th:value="${suppPage.pageSize}" size="2" id="pageSizeInput"/>条
+                        第<input th:value="${suppPage.currentPageNo}" size="2" readonly/>页/
+                        共[[${suppPage.totalPageCount}]]页
+                        <a th:href="'javascript:page(1)'">第一页</a>
+                        <a th:href="'javascript:page('+${suppPage.currentPageNo - 1 }+')'">上一页</a>
+                        <a th:href="'javascript:page('+${suppPage.currentPageNo + 1 }+')'">下一页</a>
+                        <a th:href="'javascript:page('+${suppPage.totalPageCount}+')'">最后一页</a>
+                        转到<input th:value="${suppPage.currentPageNo}" size="2" id="pageIndex"/>页
+                        <button width="20" onclick="pageGo();">GO</button>
+                    </div>
+                </th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    //模糊分页
+    function pageGo() {
+        page(document.getElementById("pageIndex").value);
+    }
+
+    function page(pageIndex) {
+        $("#currentPageNo").val(pageIndex);
+        $("#pageSize").val(document.getElementById("pageSizeInput").value);
+        $("#suppForm").submit();
+    }
+
+    function addPage() {
+        location.href='supp';
+    }
+</script>
+</body>
+</html>

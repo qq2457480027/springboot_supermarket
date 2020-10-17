@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+	<script type="text/javascript" th:src="@{/js/jquery-1.8.3.js}"></script>
+	<link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="menu">
+	<form method="get" th:action="@{/billinfo/billinfos}" id="billForm">
+		商品名称：<input type="text" name="comName" class="input-text" th:value="${billPage.param.comName}"/>&nbsp;&nbsp;&nbsp;&nbsp;
+		是否付款：
+		<select name="payment">
+			<option value="">请选择</option>
+			<option value="1" th:selected="${billPage.param.payment eq 1}">已付款</option>
+			<option value="0" th:selected="${billPage.param.payment eq 0}">未付款</option>
+		</select>&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" value="组合查询" class="button" />
+		<!-- 当前页码 -->
+		<input type="hidden" id="currentPageNo" value="1" name="currentPageNo"/>
+		<!-- 每页显示数量 -->
+		<input type="hidden" id="pageSize" value="5" name="pageSize"/>
+	</form>
+</div>
+<div class="main">
+	<div class="optitle clearfix">
+		<em><input type="button" name="button" value="添加数据" class="input-button" onclick="addPage()"/></em>
+		<div class="title">账单管理&gt;&gt;</div>
+	</div>
+	<div class="content">
+		<table class="list">
+			<tr>
+				<td>账单编号</td>
+				<td>商品名称</td>
+				<td>商品数量</td>
+				<td>交易金额</td>
+				<td>是否付款</td>
+				<td>供应商名称</td>
+				<td>商品描述</td>
+				<td>账单时间</td>
+			</tr>
+			<tr th:each="bill:${billPage.list}" th:if="${not #lists.isEmpty(billPage.list) && #lists.size(billPage.list)>0}">
+				<td>[[${bill.id}]]</td>
+				<td><a th:href="@{/billinfo/billinfo/}+${bill.id}">[[${bill.comName}]]</a></td>
+				<td>[[${bill.comQuantity}]]</td>
+				<td>[[${bill.billOffer}]]</td>
+				<td>[[${bill.payment==1?'已付款':'未付款'}]]</td>
+				<td>[[${bill.supName}]]</td>
+				<td>[[${bill.comDescribe}]]</td>
+				<td>[[${#dates.format(bill.billDate,'yyyy-MM-dd')}]]</td>
+			</tr>
+			<tr th:if="${#lists.size(billPage.list)<1}">
+				<td style="text-align: center" colspan="100">未查询到任何数据！</td>
+			</tr>
+			<tr>
+				<th colspan="100" class="pager">
+					<div class="pager">
+						共[[${billPage.totalCount}]]条记录
+						每页<input th:value="${billPage.pageSize}" size="2" id="pageSizeInput"/>条
+						第<input th:value="${billPage.currentPageNo}" size="2" readonly/>页/
+						共[[${billPage.totalPageCount}]]页
+						<a th:href="'javascript:page(1)'">第一页</a>
+						<a th:href="'javascript:page('+${billPage.currentPageNo - 1 }+')'">上一页</a>
+						<a th:href="'javascript:page('+${billPage.currentPageNo + 1 }+')'">下一页</a>
+						<a th:href="'javascript:page('+${billPage.totalPageCount}+')'">最后一页</a>
+						转到<input th:value="${billPage.currentPageNo}" size="2" id="pageIndex"/>页
+						<button width="20" onclick="pageGo();">GO</button>
+					</div>
+				</th>
+			</tr>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+	//模糊分页
+	function pageGo() {
+		page(document.getElementById("pageIndex").value);
+	}
+
+	function page(pageIndex) {
+		$("#currentPageNo").val(pageIndex);
+		$("#pageSize").val(document.getElementById("pageSizeInput").value);
+		$("#billForm").submit();
+	}
+	
+	function addPage() {
+		location.href='bill';
+	}
+</script>
+</body>
+</html>

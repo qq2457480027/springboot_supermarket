@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Insert title here</title>
+    <script type="text/javascript" th:src="@{/js/jquery-1.8.3.js}"></script>
+    <!--validate表单验证插件-->
+    <script type="text/javascript" th:src="@{/validate/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/validate/messages_zh.js}"></script>
+    <script type="text/javascript" th:src="@{/validate/additional-methods.js}"></script>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
+    <style>
+        input.error {
+            border: 1px solid red;
+        }
+
+        label.error {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("#form1").validate({
+                rules: {
+                    userName: {
+                        required: true
+                    },
+                    userPwd: {
+                        required: true
+                    },
+                    password1: {
+                        required: true,
+                        equalTo:"[name='userPwd']"
+                    },
+                    userAge: {
+                        required: true,
+                        digits:true
+                    },
+                    userPhone: {
+                        required: true,
+                        digits: true,
+                        minlength:11
+                    },
+                    userSite: {
+                        required: true
+                    }
+                },
+                messages: {
+                    userName: {
+                        required: "用户名称不能为空"
+                    },
+                    userPwd: {
+                        required: "密码不能为空"
+                    },
+                    password1: {
+                        required: "确认密码不能为空",
+                        equalTo:"两次密码不一致"
+                    },
+                    userAge: {
+                        required: "用户年龄不能为空",
+                        digits:"必须为整数"
+                    },
+                    userPhone: {
+                        required: "用户电话不能为空",
+                        digits: "必须为整数",
+                        minlength:"电话格式必须为11位整数"
+                    },
+                    userSite: {
+                        required: "用户地址不能为空"
+                    }
+                },
+                errorElement: "label", //用来创建错误提示信息标签
+                success: function (label) { //验证成功后的执行的回调函数
+                    //label指向上面那个错误提示信息标签label
+                    label.text(" ") //清空错误提示消息
+                        .addClass("success"); //加上自定义的success类
+                }
+            });
+        });
+
+        function userSubmit() {
+            var flag = $("#form1").valid();
+            if (!flag) {
+                //没有通过验证
+                return;
+            }
+            $.ajax({
+                url:"../userinfo",
+                type:"post",
+                data:$("form").serialize()+"&_method=put",
+                success:function (result) {
+                    if (result>0){
+                        alert("修改成功！");
+                        location.href='../userinfos';
+                    }else {
+                        alert("修改失败！");
+                    }
+                }
+            })
+        }
+        function userDel(id) {
+            if (confirm("确定删除吗？")){
+                $.ajax({
+                    url:"../userinfo",
+                    type:"post",
+                    data:"id="+id+"&_method=delete",
+                    success:function (result) {
+                        if (result>0){
+                            alert("删除成功！");
+                            location.href='../userinfos';
+                        }else {
+                            alert("删除失败！");
+                        }
+                    }
+                });
+            }
+        }
+        function updatePassword(id) {
+            location.href='../updatePassword?id='+id;
+        }
+    </script>
+</head>
+<body>
+<div class="main">
+    <div class="optitle clearfix">
+        <div class="title">用户管理&gt;&gt;</div>
+    </div>
+    <form id="form1" name="form1" method="post" action="user.do" onsubmit="return checkit();">
+        <div class="content">
+            <table class="box"><font color="red"></font>
+                <tr>
+                    <td class="field">用户编号：</td>
+                    <td><input readonly type="text" name="userId" class="text" th:value="${user.userId}"/> <font color="red">*</font></td>
+                </tr>
+                <tr>
+                    <td class="field">用户名称：</td>
+                    <td><input type="text" name="userName" class="text" th:value="${user.userName}"/> <font color="red">*</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="field">用户性别：</td>
+                    <td>
+                        <select name="userSex">
+                            <option value="女" th:selected="${user.userSex eq '女'}">女</option>
+                            <option value="男" th:selected="${user.userSex eq '男'}">男</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="field">用户年龄：</td>
+                    <td><input type="text" name="userAge" class="text" th:value="${user.userAge}"/> <font color="red">*</font></td>
+                </tr>
+                <tr>
+                    <td class="field">用户电话：</td>
+                    <td><input type="text" name="userPhone" class="text" th:value="${user.userPhone}"/> <font color="red">*</font></td>
+                </tr>
+                <tr>
+                    <td class="field">用户地址：</td>
+                    <td><textarea name="userSite" class="text" cols="45" rows="5" th:text="${user.userSite}"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="field">用户权限：</td>
+                    <td th:text="${user.userManager eq '是'?'管理员':'普通员工'}"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="buttons">
+            <input name="button" onclick="window.history.back();" value="返回" class="input-button" type="button">
+            <input name="button" value="修改" class="input-button" type="button" onclick="userSubmit()">
+            <input name="button" value="删除" class="input-button" type="button" th:onclick="userDel([[${user.userId}]])">
+            <input name="button" value="修改密码" class="input-button" type="button" th:onclick="updatePassword([[${user.userId}]])">
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <script type="text/javascript" th:src="@{/js/jquery-1.8.3.js}"></script>
+    <!--validate表单验证插件-->
+    <script type="text/javascript" th:src="@{/validate/jquery.validate.min.js}"></script>　
+    <script type="text/javascript" th:src="@{/validate/messages_zh.js}"></script>
+    <script type="text/javascript" th:src="@{/validate/additional-methods.js}"></script>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        input.error { border: 1px solid red; }
+        label.error {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("#form1").validate({
+                rules:{
+                    supName:{
+                        required:true
+                    },
+                    supIntro:{
+                        required:true
+                    },
+                    supContacts:{
+                        required:true
+                    },
+                    supPhone:{
+                        required:true
+                    },
+                    supSite:{
+                        required:true
+                    },
+                    supFax:{
+                        required:true
+                    }
+                },
+                messages:{
+                    supName:{
+                        required:"供应商名称不能为空"
+                    },
+                    supIntro:{
+                        required:"供应商描述不能为空"
+                    },
+                    supContacts:{
+                        required:"供应商联系不能为空"
+                    },
+                    supPhone:{
+                        required:"供应商电话不能为空"
+                    },
+                    supSite:{
+                        required:"供应商地址不能为空"
+                    },
+                    supFax:{
+                        required:"供应商传真不能为空"
+                    }
+                },
+                errorElement: "label", //用来创建错误提示信息标签
+                success: function(label) { //验证成功后的执行的回调函数
+                    //label指向上面那个错误提示信息标签label
+                    label.text(" ") //清空错误提示消息
+                        .addClass("success"); //加上自定义的success类
+                }
+            });
+        });
+        function suppSubmit(){
+            var flag = $("#form1").valid();
+            if(!flag){
+                //没有通过验证
+                return;
+            }
+            var suppinfo = $("form").serialize();
+            $.post("supplierinfo",suppinfo,function(data) {
+                if (data>0){
+                    alert("添加成功！");
+                    location.href='supplierinfos';
+                }else {
+                    alert("添加失败！");
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="main">
+    <div class="optitle clearfix">
+        <div class="title">供应商管理&gt;&gt;</div>
+    </div>
+    <form id="form1" name="form1" method="post" action="provider.do" onsubmit="return checkit();">
+        <div class="content">
+            <font color="red"></font>
+            <table class="box">
+                <tbody>
+                <tr>
+                    <td class="field">供应商名称：</td>
+                    <td><input name="supName" class="text" type="text"> <font color="red">*</font></td>
+                </tr>
+                <tr>
+                    <td class="field">供应商描述：</td>
+                    <td><textarea name="supIntro" cols="45" rows="5"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="field">供应商联系：</td>
+
+                    <td><input name="supContacts" class="text" type="text"></td>
+                </tr>
+                <tr>
+                    <td class="field">供应商电话：</td>
+                    <td><input name="supPhone" class="text" type="text"></td>
+                </tr>
+                <tr>
+                    <td class="field">供应商传真：</td>
+                    <td><input name="supFax" class="text" type="text"></td>
+                </tr>
+                <tr>
+                    <td class="field">供应商地址：</td>
+                    <td><input name="supSite" class="text" type="text"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="buttons">
+            <input name="button" value="提交" class="input-button" type="button" onclick="suppSubmit()">
+            <input name="button" onclick="window.history.back();" value="返回" class="input-button" type="button">
+        </div>
+    </form>
+</div>
+</body>
+</html>

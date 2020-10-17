@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hc.springboot.mapper.BillinfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hc.springboot.pojo.Billinfo">
+        <id column="id" property="id"/>
+        <result column="comName" property="comName"/>
+        <result column="comDescribe" property="comDescribe"/>
+        <result column="billDate" property="billDate"/>
+        <result column="supId" property="supId"/>
+        <result column="payment" property="payment"/>
+        <result column="billOffer" property="billOffer"/>
+        <result column="comQuantity" property="comQuantity"/>
+    </resultMap>
+
+    <resultMap id="BillinfoVOResultMap" type="BillinfoImplVO" extends="BaseResultMap">
+        <result column="supName" property="supName"/>
+    </resultMap>
+
+    <select id="searchBillinfoPage" resultMap="BillinfoVOResultMap">
+        SELECT id,comName,comQuantity,billOffer,payment,s.supName,comDescribe,billDate FROM billinfo b,supplierinfo s
+        WHERE b.`supId`=s.`supId`
+        <if test="param.comName != null and param.comName != ''">
+            and comName RLIKE #{param.comName}
+        </if>
+        <if test="param.payment != null">
+            and payment = #{param.payment}
+        </if>
+        ORDER BY billDate DESC LIMIT #{paramMap.currentPageNo},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="integer">
+        SELECT COUNT(1) FROM billinfo b,supplierinfo s WHERE b.`supId`=s.`supId`
+        <if test="param.comName != null and param.comName != ''">
+            and comName RLIKE #{param.comName}
+        </if>
+        <if test="param.payment != null">
+            and payment = #{param.payment}
+        </if>
+    </select>
+
+    <insert id="insertBillinfo">
+        INSERT INTO billinfo (billOffer,comQuantity,billDate,supId,payment
+        <if test="comName != null and comName != ''">
+            ,comName
+        </if>
+        <if test="comDescribe != null and comDescribe != ''">
+            ,comDescribe
+        </if>) VALUES (#{billOffer},#{comQuantity},#{billDate},#{supId},#{payment}
+        <if test="comName != null and comName != ''">
+            ,#{comName}
+        </if>
+        <if test="comDescribe != null and comDescribe != ''">
+            ,#{comDescribe}
+        </if>)
+    </insert>
+
+    <update id="updateBillinfo">
+        UPDATE billinfo SET billOffer=#{billOffer},comQuantity=#{comQuantity},supId=#{supId}, payment=#{payment},comName=#{comName},comDescribe=#{comDescribe} WHERE id=#{id}
+    </update>
+
+</mapper>

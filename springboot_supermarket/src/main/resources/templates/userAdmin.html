@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Insert title here</title>
+    <script type="text/javascript" th:src="@{/js/jquery-1.8.3.js}"></script>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div class="menu">
+    <table>
+        <tbody>
+        <tr>
+            <td>
+                <form method="get" th:action="@{/userinfo/userinfos}" id="userForm">
+                    用户名称：<input name="userName" class="input-text" type="text" th:value="${userPage.param.userName}">&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input value="查 询" type="submit">
+                    <!-- 当前页码 -->
+                    <input type="hidden" id="currentPageNo" value="1" name="currentPageNo"/>
+                    <!-- 每页显示数量 -->
+                    <input type="hidden" id="pageSize" value="5" name="pageSize"/>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="main">
+
+    <div class="optitle clearfix">
+        <em><input value="添加数据" class="input-button" onclick="addPage()" type="button"></em>
+        <div class="title">用户管理&gt;&gt;</div>
+    </div>
+    <div class="content">
+        <table class="list">
+            <tbody>
+            <tr>
+                <td width="70" height="29">
+                    <div class="STYLE1" align="center">编号</div>
+                </td>
+                <td width="80">
+                    <div class="STYLE1" align="center">用户名称</div>
+                </td>
+                <td width="100">
+                    <div class="STYLE1" align="center">性别</div>
+                </td>
+                <td width="100">
+                    <div class="STYLE1" align="center">年龄</div>
+                </td>
+                <td width="150">
+                    <div class="STYLE1" align="center">电话</div>
+                </td>
+                <td width="150">
+                    <div class="STYLE1" align="center">地址</div>
+                </td>
+                <td width="150">
+                    <div class="STYLE1" align="center">权限</div>
+                </td>
+            </tr>
+            <tr th:each="user:${userPage.list}" th:if="${not #lists.isEmpty(userPage.list) && #lists.size(userPage.list)>0}">
+              <td>[[${user.userId}]]</td>
+              <td><a th:href="@{/userinfo/userinfo/}+${user.userId}">[[${user.userName}]]</a></td>
+              <td>[[${user.userSex}]]</td>
+              <td>[[${user.userAge}]]</td>
+              <td>[[${user.userPhone}]]</td>
+              <td>[[${user.userSite}]]</td>
+              <td>[[${user.userManager eq '是'?'admin权限':'普通员工权限'}]]</td>
+            </tr>
+            <tr th:if="${#lists.size(userPage.list)<1}">
+              <td style="text-align: center" colspan="100">未查询到任何数据！</td>
+            </tr>
+            <tr>
+              <th colspan="100" class="pager">
+                <div class="pager">
+                  共[[${userPage.totalCount}]]条记录
+                  每页<input th:value="${userPage.pageSize}" size="2" id="pageSizeInput"/>条
+                  第<input th:value="${userPage.currentPageNo}" size="2" readonly/>页/
+                  共[[${userPage.totalPageCount}]]页
+                  <a th:href="'javascript:page(1)'">第一页</a>
+                  <a th:href="'javascript:page('+${userPage.currentPageNo - 1 }+')'">上一页</a>
+                  <a th:href="'javascript:page('+${userPage.currentPageNo + 1 }+')'">下一页</a>
+                  <a th:href="'javascript:page('+${userPage.totalPageCount}+')'">最后一页</a>
+                  转到<input th:value="${userPage.currentPageNo}" size="2" id="pageIndex"/>页
+                  <button width="20" onclick="pageGo();">GO</button>
+                </div>
+              </th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+  //模糊分页
+  function pageGo() {
+    page(document.getElementById("pageIndex").value);
+  }
+
+  function page(pageIndex) {
+    $("#currentPageNo").val(pageIndex);
+    $("#pageSize").val(document.getElementById("pageSizeInput").value);
+    $("#userForm").submit();
+  }
+
+  function addPage() {
+    location.href='user';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+	<link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<div id="header" th:fragment="top">
+	<div class="title"></div>
+	<div class="welcome">欢迎您：[[${session.user.userName}]]</div>
+</div>
+</body>
+</html>

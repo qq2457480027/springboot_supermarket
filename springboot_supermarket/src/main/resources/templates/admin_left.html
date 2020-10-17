@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+	<link type="text/css" rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body class="frame-bd" th:fragment="left">
+<ul class="left-menu">
+	<li><a th:href="@{/billinfo/billinfos}" target="mainFrame"><img th:src="@{/images/btn_bill.gif}" /></a></li>
+	<li><a th:href="@{/supplierinfo/supplierinfos}" target="mainFrame"><img th:src="@{/images/btn_suppliers.gif}" /></a></li>
+	<li><a th:href="@{/userinfo/userinfos}" target="mainFrame"><img th:src="@{/images/btn_users.gif}" /></a></li>
+	<li><a href="#" onclick="loginOut()"><img th:src="@{/images/btn_exit.gif}" /></a></li>
+</ul>
+<script>
+	function loginOut() {
+		if (confirm("是否退出？")){
+			location.href="loginOut";
+		}
+	}
+</script>
+</body>
+</html>

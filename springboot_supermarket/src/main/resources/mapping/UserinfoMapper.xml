@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hc.springboot.mapper.UserinfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hc.springboot.pojo.Userinfo">
+        <id column="userId" property="userId" />
+        <result column="userName" property="userName" />
+        <result column="userPwd" property="userPwd" />
+        <result column="userSex" property="userSex" />
+        <result column="userAge" property="userAge" />
+        <result column="userPhone" property="userPhone" />
+        <result column="userSite" property="userSite" />
+        <result column="userManager" property="userManager" />
+    </resultMap>
+
+    <select id="searchUserinfoByUserNameAndUserPwd" resultMap="BaseResultMap">
+        select userId,userName,userPwd,userSex,userAge,userPhone,userSite,userManager from userinfo
+        where userName=#{userName} and userPwd=#{userPwd}
+    </select>
+
+    <select id="searchUserinfoPage" resultMap="BaseResultMap">
+        SELECT userId,userName,userSex,userAge,userPhone,userSite,userManager FROM userinfo
+        WHERE 1=1
+        <if test="param.userName != null and param.userName != ''">
+            and userName RLIKE #{param.userName}
+        </if>
+        LIMIT #{paramMap.currentPageNo},#{pageSize}
+    </select>
+
+    <select id="totalCount" resultType="integer">
+        SELECT COUNT(1) FROM userinfo WHERE 1=1
+        <if test="param.userName != null and param.userName != ''">
+            and userName RLIKE #{param.userName}
+        </if>
+    </select>
+
+    <update id="updateUserinfo">
+        UPDATE userinfo SET
+        <if test="userSex != null and userSex != ''">
+            userName=#{userName},userSex=#{userSex},userAge=#{userAge},userPhone=#{userPhone},userSite=#{userSite}
+        </if>
+        <if test="userSex == null or userSex == ''">
+            userPwd = #{userPwd}
+        </if>
+        WHERE userId=#{userId}
+    </update>
+
+</mapper>

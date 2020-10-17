@@ -1,0 +1,40 @@
+spring:
+  #数据源
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3306/jsp_ch01_db?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  #禁用模板缓存
+  thymeleaf:
+    cache: false
+  #设置热部署
+  devtools:
+    restart:
+      enabled: true  #设置开启热部署
+      additional-paths: src/main/java #重启目录
+    freemarker:
+      cache: false    #页面不加载缓存，修改即时生效
+  #springboot2以上版本发送put和delete请求默认修改为了false，需在配置文件手动开启
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+    #指定默认日期格式
+    format:
+      date: yyyy-MM-dd
+
+#mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.hc.springboot.pojo
+
+#将日志输出级别设置为debug，可以查看SQL语句
+logging:
+  level:
+    com:
+      hc:
+        springboot: debug
+
+
